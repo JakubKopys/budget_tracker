@@ -6,7 +6,7 @@ module Users
     validates :password,
               length: { minimum: User::MINIMUM_PASSWORD_LENGTH },
               allow_blank: true
-
+    validates :email, format: { with: EMAIL_REGEXP }, if: :email
     validate :unique_email, if: :email
 
     private

@@ -29,5 +29,6 @@ yarn-debug.log*
 
 *.swp
 *.swo
+*.vim
 
 config/secrets.yml
