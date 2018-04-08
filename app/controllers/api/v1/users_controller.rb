@@ -1,7 +1,7 @@
 module Api
   module V1
     class UsersController < ApplicationController
-      before_action :authenticate_user!, except: [:create]
+      skip_before_action :authenticate_user!, only: [:create]
 
       def create
         respond_with interactor: Users::Register.call(create_params)
