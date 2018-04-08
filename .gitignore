@@ -32,3 +32,6 @@ yarn-debug.log*
 *.vim
 
 config/secrets.yml
+
+# Ignore docs
+api-docs.yml

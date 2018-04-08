@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root to: 'pages#index'
+  get '/docs', to: redirect('/docs/swagger-ui/index.html')
 
   namespace :api do
     namespace :v1 do

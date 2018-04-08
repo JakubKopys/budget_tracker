@@ -1,0 +1,83 @@
+---
+swagger: '2.0'
+info:
+  description: 'This is documentation for BudgetTracker API. The API responds to json. Authentication is done via JWT tokens.'
+  version: 1.0.0
+  title: BudgetTracker API
+host: <%= Rails.application.secrets.host %>
+basePath: "/api"
+produces:
+- "application/json"
+tags:
+- name: Users
+  description: Authentication and updating users
+schemas:
+- http
+securityDefinitions:
+  User:
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  /v1/users:
+    post:
+      tags:
+        - Users
+      summary: "Create new User"
+      parameters:
+        - name: user[email]
+          in: formData
+          required: true
+          type: string
+          description: Your email. Unique across the system.
+        - name: user[first_name]
+          in: formData
+          required: true
+          type: string
+        - name: user[last_name]
+          in: formData
+          required: true
+          type: string
+        - name: user[password]
+          in: formData
+          required: true
+          type: string
+          description: Your password.
+      responses:
+        201:
+          description: user_id and token to be returned
+          content:
+            application/json:
+              schema:
+                user_id: string
+                token: string
+        422:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
+  /v1/users/login:
+    post:
+      tags:
+         - Users
+      parameters:
+        - name: user[email]
+          in: formData
+          required: true
+          type: string
+          description: Your email.
+        - name: user[password]
+          in: formData
+          required: true
+          type: string
+          description: Your password.
+      responses:
+        200:
+          description: user_id and token to be returned
+          content:
+            application/json:
+              schema:
+                user_id: string
+                token: string
