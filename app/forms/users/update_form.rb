@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class UpdateForm < BasicForm
     ADDITIONAL_ATTRIBUTES = %i(password_confirmation).freeze

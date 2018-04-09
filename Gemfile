@@ -28,6 +28,8 @@ group :development, :test do
   gem 'selenium-webdriver'
   gem 'factory_bot_rails'
   gem 'ffaker'
+  gem 'rubocop', require: false
+  gem 'rubocop-rspec'
 end
 
 group :development do

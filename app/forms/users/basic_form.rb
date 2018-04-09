@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Users
   class BasicForm < ApplicationForm
     BASE_ATTRIBUTES = %i(email first_name last_name password).freeze
