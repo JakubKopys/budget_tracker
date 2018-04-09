@@ -15,8 +15,13 @@ module Users
       ensure_header_format header
       token = token_from_header header
       payload = decode token
+      raise Error, 'token expired' if ExpiredToken.where(token: token).exists?
 
       User.find(payload['user_id'])
+    rescue JWT::ExpiredSignature
+      raise Error, 'token expired'
+    rescue JWT::DecodeError, ActiveRecord::RecordNotFound
+      raise Error, 'could not authorize token'
     end
 
     def token_from_header(header)

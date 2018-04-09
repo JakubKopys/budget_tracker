@@ -39,4 +39,30 @@ RSpec.describe Api::V1::AuthenticationController, type: :request do
       end
     end
   end
+
+  describe 'DELETE #destroy' do
+    context 'when user is not logged in' do
+      it 'is unauthorized and returns error message' do
+        delete '/api/v1/users/logout'
+
+        json_response = JSON.parse(response.body)
+        expect(response).to be_unauthorized
+        expect(json_response).to have_key 'errors'
+      end
+    end
+
+    context 'when user is logged in' do
+      include AuthenticationHelper
+
+      it 'expires token so next requests with this token are unauthrized' do
+        auth_delete '/api/v1/users/logout', user: user
+
+        expect(response).to be_no_content
+
+        auth_delete '/api/v1/users/logout', user: user
+
+        expect(response).to be_unauthorized
+      end
+    end
+  end
 end

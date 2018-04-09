@@ -10,7 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180407211421) do
+ActiveRecord::Schema.define(version: 20180409201826) do
+
+  create_table "expired_tokens", force: :cascade do |t|
+    t.string "token", null: false
+    t.datetime "expires_at", null: false
+    t.index ["token"], name: "index_expired_tokens_on_token", unique: true
+  end
 
   create_table "transactions", force: :cascade do |t|
     t.string "type", null: false
