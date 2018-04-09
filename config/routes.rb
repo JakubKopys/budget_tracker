@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: [:create, :update]
 
-      post '/users/login', to: 'sessions#create'
+      post '/users/login', to: 'authentication#create'
     end
   end
 end
