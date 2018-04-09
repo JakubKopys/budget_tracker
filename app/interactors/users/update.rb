@@ -4,7 +4,7 @@ module Users
   class Update < ApplicationInteractor
     def call
       user = User.find context.id
-      validate_form user
+      validate_form
       update_user user
 
       context.result = ProfileSerializer.new(user).as_json
@@ -18,7 +18,7 @@ module Users
       end
     end
 
-    def validate_form(user)
+    def validate_form
       form = UpdateForm.new form_params
       stop form.errors, :unprocessable_entity unless form.validate
     end
