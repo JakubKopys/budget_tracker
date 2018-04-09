@@ -7,11 +7,13 @@ AllCops:
     - db/migrate/**
     - vendor/**/**
     - bin/**/**
+    - node_modules/**/**
 
 Documentation:
   Enabled: false
 
 Metrics/LineLength:
+  Max: 90
   AllowHeredoc: true
   AllowURI: true
   URISchemes:
