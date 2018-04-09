@@ -9,4 +9,3 @@ module Users
     attr_accessor(*ATTRIBUTES)
   end
 end
-

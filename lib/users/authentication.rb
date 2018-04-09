@@ -48,9 +48,9 @@ module Users
     end
 
     def ensure_header_format(header)
-      return if header && header.match?(HEADER_REGEXP)
+      return if header&.match?(HEADER_REGEXP)
 
-      raise Error, "Authentication header has to have format: Bearer my.personal.token"
+      raise Error, 'Authentication header has to have format: Bearer my.personal.token'
     end
   end
 end

@@ -2,7 +2,7 @@
 
 module Users
   class BasicForm < ApplicationForm
-    BASE_ATTRIBUTES = %i(email first_name last_name password).freeze
+    BASE_ATTRIBUTES = %i[email first_name last_name password].freeze
     EMAIL_REGEXP = /\A[^@\s]+@[^@\s]+\z/
 
     validates :password,

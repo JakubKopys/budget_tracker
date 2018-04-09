@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :swagger do
   desc 'Creates swagger yml configuration file from erb template'
   task generate_docs: :environment do

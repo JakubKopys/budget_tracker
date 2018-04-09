@@ -11,7 +11,7 @@ module Api
       end
 
       def update
-        respond_with interactor: Users::Update.call(update_params.merge id: params[:id])
+        respond_with interactor: Users::Update.call(update_params.merge(id: params[:id]))
       end
 
       private
@@ -20,15 +20,15 @@ module Api
         return true if current_user.id == params[:id].to_i
 
         render json: { errors: 'You can only access your own profile' },
-                     status: :forbidden
+               status: :forbidden
       end
 
       def user_params
         params.require(:user).permit(:email, :first_name, :last_name, :password)
       end
 
-      alias_method :create_params, :user_params
-      alias_method :update_params, :user_params
+      alias create_params user_params
+      alias update_params user_params
     end
   end
 end

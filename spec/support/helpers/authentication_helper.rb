@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'users/authentication'
 
 module AuthenticationHelper
@@ -25,7 +26,7 @@ module AuthenticationHelper
   private
 
   def auth_token(user)
-    user ||=create :user
+    user ||= create :user
     token = Users::Authentication.create_token user_id: user.id
     "Bearer #{token}"
   end
