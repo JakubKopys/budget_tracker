@@ -13,6 +13,24 @@ tags:
   description: Authentication and updating users
 schemas:
 - http
+definitions:
+  userProfile:
+    type: object
+    required:
+      - user
+    properties:
+      user:
+        type: object
+        properties:
+          id:
+            type: number
+          first_name:
+            type: string
+          last_name:
+            type: string
+          email:
+            type: string
+
 securityDefinitions:
   User:
     type: apiKey
@@ -58,17 +76,64 @@ paths:
               schema:
                 errors: array
 
+  /v1/users/{id}:
+    put:
+      tags:
+        - Users
+      summary: "Update User"
+      security:
+        - User: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          description: User's id
+        - name: user[email]
+          in: formData
+          type: string
+          description: Your email. Unique across the system.
+        - name: user[first_name]
+          in: formData
+          type: string
+        - name: user[last_name]
+          in: formData
+          type: string
+        - name: user[password]
+          in: formData
+          type: string
+          description: Your password.
+      responses:
+        200:
+          description: updated user to be returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/userProfile'
+        401:
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                errors: array
+        422:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
   /v1/users/login:
     post:
       tags:
          - Users
       parameters:
-        - name: user[email]
+        - name: email
           in: formData
           required: true
           type: string
           description: Your email.
-        - name: user[password]
+        - name: password
           in: formData
           required: true
           type: string
@@ -81,3 +146,10 @@ paths:
               schema:
                 user_id: string
                 token: string
+
+  /v1/users/logout:
+    delete:
+      tags:
+        - Users
+      security:
+        - Users: []
