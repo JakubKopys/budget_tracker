@@ -10,12 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180409201826) do
+ActiveRecord::Schema.define(version: 20180410172558) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "expired_tokens", force: :cascade do |t|
     t.string "token", null: false
     t.datetime "expires_at", null: false
     t.index ["token"], name: "index_expired_tokens_on_token", unique: true
+  end
+
+  create_table "households", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "inmates", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "household_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id"], name: "index_inmates_on_household_id"
+    t.index ["user_id", "household_id"], name: "index_inmates_on_user_id_and_household_id", unique: true
+    t.index ["user_id"], name: "index_inmates_on_user_id"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -41,4 +60,6 @@ ActiveRecord::Schema.define(version: 20180409201826) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "inmates", "households"
+  add_foreign_key "inmates", "users"
 end
