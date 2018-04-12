@@ -13,7 +13,7 @@ RSpec.describe Api::V1::UsersController, type: :request do
 
         post '/api/v1/users', params: { user: user_params }
 
-        json_response = JSON.parse(response.body)
+        json_response = JSON.parse response.body
         expect(response).to be_created
         expect(json_response).to have_key 'user_id'
         expect(json_response).to have_key 'token'
@@ -26,7 +26,7 @@ RSpec.describe Api::V1::UsersController, type: :request do
 
         post '/api/v1/users', params: { user: invalid_params }
 
-        json_response = JSON.parse(response.body)
+        json_response = JSON.parse response.body
         expect(response).to be_unprocessable
         expect(json_response).to have_key 'errors'
       end
@@ -39,7 +39,7 @@ RSpec.describe Api::V1::UsersController, type: :request do
         update_params = { last_name: 'Foo' }
         put "/api/v1/users/#{user.id}", params: { user: update_params }
 
-        json_response = JSON.parse(response.body)
+        json_response = JSON.parse response.body
         expect(response).to be_unauthorized
         expect(json_response).to have_key 'errors'
       end
@@ -58,7 +58,7 @@ RSpec.describe Api::V1::UsersController, type: :request do
           auth_put update_path, params: { user: update_params }, user: user
         end.not_to change other_user, :email
 
-        json_response = JSON.parse(response.body)
+        json_response = JSON.parse response.body
         expect(response).to be_forbidden
         expect(json_response).to have_key 'errors'
       end
@@ -87,7 +87,7 @@ RSpec.describe Api::V1::UsersController, type: :request do
             auth_put update_path, params: { user: invalid_params }, user: user
           end.not_to change user, :email
 
-          json_response = JSON.parse(response.body)
+          json_response = JSON.parse response.body
           expect(response).to be_unprocessable
           expect(json_response).to have_key 'errors'
         end

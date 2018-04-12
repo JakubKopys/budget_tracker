@@ -7,11 +7,11 @@ module Api
       before_action :authorize_user, only: [:update]
 
       def create
-        respond_with interactor: Users::Register.call(create_params)
+        respond_with interactor: Users::Register.call(user_params)
       end
 
       def update
-        respond_with interactor: Users::Update.call(update_params.merge(id: params[:id]))
+        respond_with interactor: Users::Update.call(user_params.merge(id: params[:id]))
       end
 
       private
@@ -26,9 +26,6 @@ module Api
       def user_params
         params.require(:user).permit(:email, :first_name, :last_name, :password)
       end
-
-      alias create_params user_params
-      alias update_params user_params
     end
   end
 end
