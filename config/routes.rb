@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :users, only: %i[create update]
+      resources :households, only: %i[create update]
 
       post   '/users/login',  to: 'authentication#create'
       delete '/users/logout', to: 'authentication#destroy'

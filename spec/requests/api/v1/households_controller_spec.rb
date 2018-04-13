@@ -22,7 +22,10 @@ RSpec.describe Api::V1::HouseholdsController, type: :request do
       context 'with valid params' do
         it 'is created and creates household' do
           household_params = attributes_for :household
-          auth_post '/api/v1/households', params: { household: household_params }
+
+          expect do
+            auth_post '/api/v1/households', params: { household: household_params }
+          end.to change(Household, :count).by 1
 
           json_response = JSON.parse response.body
           expect(response).to be_created

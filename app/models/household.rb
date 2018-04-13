@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Household < ApplicationRecord
+  MINIMUM_NAME_LENGTH = 4
+
   has_many :inmates, dependent: :destroy
   has_many :users, through: :inmates
 
