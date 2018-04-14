@@ -48,7 +48,7 @@ RSpec.describe Api::V1::UsersController, type: :request do
     context 'when user is logged in but not requesting himself' do
       include AuthenticationHelper
 
-      it 'is unauthorized and returns error message' do
+      it 'is forbidden and returns error message' do
         other_user = create :user
 
         update_path = "/api/v1/users/#{other_user.id}"

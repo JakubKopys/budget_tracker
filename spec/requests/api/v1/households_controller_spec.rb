@@ -64,7 +64,7 @@ RSpec.describe Api::V1::HouseholdsController, type: :request do
       include AuthenticationHelper
 
       context 'when is not an admin' do
-        it 'is unauthorized and returns errors' do
+        it 'is forbidden and returns errors' do
           household = create :household
 
           update_params = { name: 'New Name' }
@@ -72,7 +72,7 @@ RSpec.describe Api::V1::HouseholdsController, type: :request do
           auth_put update_path, params: { household: update_params }
 
           json_response = JSON.parse response.body
-          expect(response).to be_unauthorized
+          expect(response).to be_forbidden
           expect(json_response).to have_key 'errors'
         end
       end
