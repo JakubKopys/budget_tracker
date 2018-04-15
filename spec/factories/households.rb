@@ -2,6 +2,14 @@
 
 FactoryBot.define do
   factory :household do
-    name 'Name'
+    sequence :name do |n|
+      "Household#{n}"
+    end
+
+    factory :household_with_admin do
+      after(:create) do |household|
+        create :admin_inmate, household: household
+      end
+    end
   end
 end

@@ -33,6 +33,10 @@ Metrics/BlockLength:
 Style/ModuleFunction:
   EnforcedStyle: extend_self
 
+Style/ClassAndModuleChildren:
+  Exclude:
+    - app/controllers/api/v1/join_requests/**
+
 Rails:
   Enabled: true
 

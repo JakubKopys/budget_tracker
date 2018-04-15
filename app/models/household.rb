@@ -11,4 +11,7 @@ class Household < ApplicationRecord
            class_name: 'Inmate',
            inverse_of: :household
   has_many :admins, through: :admin_inmates, source: :user
+
+  has_many :invites, dependent: :destroy
+  has_many :requests, dependent: :destroy
 end

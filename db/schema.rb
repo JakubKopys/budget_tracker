@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180411160615) do
+ActiveRecord::Schema.define(version: 20180415174443) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,6 +38,18 @@ ActiveRecord::Schema.define(version: 20180411160615) do
     t.index ["user_id"], name: "index_inmates_on_user_id"
   end
 
+  create_table "join_requests", force: :cascade do |t|
+    t.integer "invitee_id", null: false
+    t.datetime "expires_at", null: false
+    t.bigint "household_id", null: false
+    t.string "state", null: false
+    t.string "type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id"], name: "index_join_requests_on_household_id"
+    t.index ["invitee_id", "household_id"], name: "index_join_requests_on_invitee_id_and_household_id", unique: true
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.string "type", null: false
     t.string "title", null: false
@@ -63,4 +75,6 @@ ActiveRecord::Schema.define(version: 20180411160615) do
 
   add_foreign_key "inmates", "households"
   add_foreign_key "inmates", "users"
+  add_foreign_key "join_requests", "households"
+  add_foreign_key "join_requests", "users", column: "invitee_id"
 end
