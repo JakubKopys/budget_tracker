@@ -7,6 +7,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem 'aasm', '~> 4.11'
 gem 'active_model_serializers'
 gem 'bcrypt'
 gem 'coffee-rails', '~> 4.2'
