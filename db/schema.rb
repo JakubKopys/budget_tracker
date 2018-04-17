@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180415174443) do
+ActiveRecord::Schema.define(version: 20180417152952) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,21 +21,21 @@ ActiveRecord::Schema.define(version: 20180415174443) do
     t.index ["token"], name: "index_expired_tokens_on_token", unique: true
   end
 
-  create_table "households", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "inmates", force: :cascade do |t|
+  create_table "household_users", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "household_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_admin", default: false
-    t.index ["household_id"], name: "index_inmates_on_household_id"
-    t.index ["user_id", "household_id"], name: "index_inmates_on_user_id_and_household_id", unique: true
-    t.index ["user_id"], name: "index_inmates_on_user_id"
+    t.index ["household_id"], name: "index_household_users_on_household_id"
+    t.index ["user_id", "household_id"], name: "index_household_users_on_user_id_and_household_id", unique: true
+    t.index ["user_id"], name: "index_household_users_on_user_id"
+  end
+
+  create_table "households", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "join_requests", force: :cascade do |t|
@@ -73,8 +73,8 @@ ActiveRecord::Schema.define(version: 20180415174443) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "inmates", "households"
-  add_foreign_key "inmates", "users"
+  add_foreign_key "household_users", "households"
+  add_foreign_key "household_users", "users"
   add_foreign_key "join_requests", "households"
   add_foreign_key "join_requests", "users", column: "invitee_id"
 end
