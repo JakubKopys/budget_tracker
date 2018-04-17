@@ -18,8 +18,9 @@ module Api
       private
 
       def authorize_user
-        return if Inmate.where(user_id: current_user.id, household_id: params[:id],
-                               is_admin: true).exists?
+        return if HouseholdUser.where(user_id: current_user.id,
+                                      household_id: params[:id],
+                                      is_admin: true).exists?
 
         render json: { errors: 'Only admins can update household information' },
                status: :forbidden

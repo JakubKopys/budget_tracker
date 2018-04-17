@@ -8,7 +8,7 @@ FactoryBot.define do
 
     factory :household_with_admin do
       after(:create) do |household|
-        create :admin_inmate, household: household
+        create :admin_household_user, household: household
       end
     end
   end

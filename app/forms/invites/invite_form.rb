@@ -12,10 +12,9 @@ module Invites
     private
 
     def cant_be_household_resident
-      return unless household.inmates.pluck(:user_id).include? user.id
+      return unless household.household_users.pluck(:user_id).include? user.id
 
       errors.add :user, "can't invite user that is already an household resident"
     end
-
   end
 end

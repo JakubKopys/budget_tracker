@@ -78,10 +78,8 @@ RSpec.describe Api::V1::HouseholdsController, type: :request do
       end
 
       context 'when is an admin' do
-        let(:user) { create :user }
-        let(:household) { create :household }
-
-        before { create :inmate, user: user, household: household, is_admin: true }
+        let(:household) { create :household_with_admin }
+        let(:user) { household.admins.first! }
 
         context 'with valid params' do
           it 'updates user and returns household' do
