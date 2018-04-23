@@ -3,31 +3,35 @@
 module Api
   module V1
     class JoinRequests::InvitesController < ApplicationController
-      before_action :authorize_user
-
-      def create
-        user = User.find params[:user_id]
-        household = Household.find params[:household_id]
-        respond_with interactor: Invites::Invite.call(user: user, household: household)
-      end
-
-      def update
+      def index
+        # TODO: implement
         raise NotImplementedError
       end
 
-      def destroy
+      def create
+        # TODO: move these finds to interactor
+        user = User.find params[:user_id]
+        household = current_user.administrated_households.find params[:household_id]
+        respond_with interactor: Invites::Create.call(user: user, household: household)
+      end
+
+      # TODO: test accept/decline
+      def accept
+        respond_with interactor: Invites::Accept.call(invite_params)
+      end
+
+      def decline
         raise NotImplementedError
       end
 
       private
 
-      def authorize_user
-        return if HouseholdUser.where(user_id: current_user.id,
-                                      household_id: params[:household_id],
-                                      is_admin: true).exists?
-
-        render json: { errors: 'Only admins can invite users.' },
-               status: :forbidden
+      def invite_params
+        {
+          user: current_user,
+          invite_id: params[:id].to_i,
+          household_id: params[:household_id].to_i
+        }
       end
     end
   end

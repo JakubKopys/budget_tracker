@@ -11,8 +11,11 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
 
     context 'when user is not logged in' do
       it 'is unauthorized and returns errors' do
-        invite_params = { household_id: 1, invitee_id: 1 }
-        post '/api/v1/join_requests/invites', params: invite_params
+        household = create :household
+
+        invite_params = { invitee_id: 1 }
+        post "/api/v1/households/#{household.id}/join_requests/invites",
+             params: invite_params
 
         json_response = JSON.parse response.body
         expect(response).to be_unauthorized
@@ -26,12 +29,15 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
       it 'is forbidden and returns errors' do
         household = create :household
 
-        invite_params = { household_id: household.id, user_id: user.id }
-        auth_post '/api/v1/join_requests/invites', params: invite_params
+        invite_params = { user_id: user.id }
+        expect do
+          auth_post "/api/v1/households/#{household.id}/join_requests/invites",
+                    params: invite_params
+        end.not_to change Invite, :count
 
         json_response = JSON.parse response.body
-        expect(response).to be_forbidden
-        expect(json_response).to have_key 'errors'
+        expect(response).to be_not_found
+        expect(json_response).to have_key 'error'
       end
     end
 
@@ -42,8 +48,8 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
         it 'creates invite' do
           household = household_with_admin
 
-          invite_params = { household_id: household.id, user_id: user.id }
-          invite_path = '/api/v1/join_requests/invites'
+          invite_params = { user_id: user.id }
+          invite_path = "/api/v1/households/#{household.id}/join_requests/invites"
 
           expect do
             auth_post invite_path, params: invite_params, user: admin
@@ -59,8 +65,8 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
         it 'is not found, does not create an invite and returns error' do
           household = household_with_admin
 
-          invite_params = { household_id: household.id, user_id: 'foobar' }
-          invite_path = '/api/v1/join_requests/invites'
+          invite_params = { user_id: 'foobar' }
+          invite_path = "/api/v1/households/#{household.id}/join_requests/invites"
 
           expect do
             auth_post invite_path, params: invite_params, user: admin
@@ -74,17 +80,17 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
     end
   end
 
-  xdescribe 'PUT #update' do
+  describe 'POST #accept' do
+    let(:household) { create :household_with_admin }
+    let(:invite) { create :invite, household: household }
+    let(:admin) { household.admins.first }
+
     context 'when user is not logged in' do
       it 'is unauthorized and returns errors' do
-        invite = create :invite
+        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
+               '/accept'
 
-        update_params = { state: 'accepted' }
-        update_path = "/api/v1/join_requests/invites/#{invite.id}"
-
-        expect do
-          put update_path, params: { invite: update_params }
-        end.not_to change invite, :state
+        expect { post path }.not_to change invite, :state
 
         json_response = JSON.parse response.body
         expect(response).to be_unauthorized
@@ -96,58 +102,32 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
       include AuthenticationHelper
 
       it 'is forbidden and returns errors' do
-        invite = create :invite
+        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
+               '/accept'
 
-        update_params = { state: 'accepted' }
-        update_path = "/api/v1/join_requests/invites/#{invite.id}"
-
-        expect do
-          auth_put update_path, params: { invite: update_params }
-        end.not_to change invite, :state
+        expect { auth_post path }.not_to(change { invite.reload.state })
 
         json_response = JSON.parse response.body
-        expect(response).to be_forbidden
-        expect(json_response).to have_key 'errors'
+        expect(response).to be_not_found
+        expect(json_response).to have_key 'error'
       end
     end
 
     context 'when user is logged in and is an admin' do
       include AuthenticationHelper
 
-      context 'with invalid params' do
-        it 'is unprocessable and returns error' do
-          household = create :household_with_admin
-          admin = household.admins.first
-          invite = create :invite, household: household
+      it 'is success and updates invite state' do
+        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
+               '/accept'
 
-          update_params = { state: 'foobar' }
-          update_path = "/api/v1/join_requests/invites/#{invite.id}"
+        expect do
+          auth_post path, user: admin
+          invite.reload
+          household.reload
+        end.to change(invite, :state).to('accepted')
+           .and change(household.users, :count).by 1
 
-          expect do
-            auth_put update_path, params: { invite: update_params }, user: admin
-          end.not_to change invite, :state
-
-          json_response = JSON.parse response.body
-          expect(response).to be_unprocessable
-          expect(json_response).to have_key 'errors'
-        end
-      end
-
-      context 'with valid params' do
-        it 'is success and updates invite state' do
-          household = create :household_with_admin
-          admin = household.admins.first
-          invite = create :invite, household: household
-
-          update_params = { state: 'accepted' }
-          update_path = "/api/v1/join_requests/invites/#{invite.id}"
-
-          expect do
-            auth_put update_path, params: { invite: update_params }, user: admin
-          end.to change(invite, :state).to update_params.fetch('state')
-
-          expect(response).to be_success
-        end
+        expect(response).to be_success
       end
     end
   end
