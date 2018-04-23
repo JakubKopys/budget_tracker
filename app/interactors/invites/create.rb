@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Invites
-  class Invite < ApplicationInteractor
+  class Create < ApplicationInteractor
     delegate :user, :household, to: :context
 
     def call
