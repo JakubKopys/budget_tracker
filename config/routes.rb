@@ -11,7 +11,7 @@ Rails.application.routes.draw do
           resources :invites, only: %i[create update destroy] do
             member do
               post :accept
-              post :descline
+              post :decline
             end
           end
 

@@ -3,25 +3,18 @@
 module Api
   module V1
     class JoinRequests::InvitesController < ApplicationController
-      def index
-        # TODO: implement
-        raise NotImplementedError
-      end
-
       def create
-        # TODO: move these finds to interactor
         user = User.find params[:user_id]
         household = current_user.administrated_households.find params[:household_id]
         respond_with interactor: Invites::Create.call(user: user, household: household)
       end
 
-      # TODO: test accept/decline
       def accept
         respond_with interactor: Invites::Accept.call(invite_params)
       end
 
       def decline
-        raise NotImplementedError
+        respond_with interactor: Invites::Decline.call(invite_params)
       end
 
       private
