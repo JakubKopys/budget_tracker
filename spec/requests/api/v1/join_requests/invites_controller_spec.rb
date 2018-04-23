@@ -81,16 +81,15 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
   end
 
   describe 'POST #accept' do
-    let(:household) { create :household_with_admin }
-    let(:invite) { create :invite, household: household }
-    let(:admin) { household.admins.first }
-
     context 'when user is not logged in' do
       it 'is unauthorized and returns errors' do
+        household = create :household
+        invite = create :invite, household: household
+
         path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
                '/accept'
 
-        expect { post path }.not_to change invite, :state
+        expect { post path }.not_to(change { invite.reload.state })
 
         json_response = JSON.parse response.body
         expect(response).to be_unauthorized
@@ -101,7 +100,10 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
     context 'when user is logged in but is not an admin' do
       include AuthenticationHelper
 
-      it 'is forbidden and returns errors' do
+      it 'is not found and returns errors' do
+        household = create :household
+        invite = create :invite, household: household
+
         path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
                '/accept'
 
@@ -117,6 +119,10 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
       include AuthenticationHelper
 
       it 'is success and updates invite state' do
+        household = create :household_with_admin
+        invite = create :invite, household: household
+        admin = household.admins.first
+
         path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
                '/accept'
 
@@ -124,7 +130,7 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
           auth_post path, user: admin
           invite.reload
           household.reload
-        end.to change(invite, :state).to('accepted')
+        end.to  change(invite, :state).to('accepted')
            .and change(household.users, :count).by 1
 
         expect(response).to be_success
@@ -132,7 +138,61 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
     end
   end
 
-  # TODO: write tests
-  xdescribe 'DELETE #destroy' do
+  describe 'DELETE #destroy' do
+    context 'when user is not logged in' do
+      it 'is unauthorized and returns errors' do
+        household = create :household
+        invite = create :invite, household: household
+
+        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
+               '/decline'
+
+        expect { post path }.not_to(change { invite.reload.state })
+
+        json_response = JSON.parse response.body
+        expect(response).to be_unauthorized
+        expect(json_response).to have_key 'errors'
+      end
+    end
+
+    context 'when user is logged in but is not an admin' do
+      include AuthenticationHelper
+
+      it 'is not found and returns error' do
+        household = create :household
+        invite = create :invite, household: household
+
+        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
+               '/decline'
+
+        expect { auth_post path }.not_to(change { invite.reload.state })
+
+        json_response = JSON.parse response.body
+        expect(response).to be_not_found
+        expect(json_response).to have_key 'error'
+      end
+    end
+
+    context 'when user is logged in and is an admin' do
+      include AuthenticationHelper
+
+      it 'is success, creates household user and updates invite state' do
+        household = create :household_with_admin
+        invite = create :invite, household: household
+        admin = household.admins.first
+
+        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
+               '/decline'
+
+        expect do
+          auth_post path, user: admin
+          invite.reload
+          household.reload
+        end.to  change(invite, :state).to('declined')
+           .and not_change(household.users, :count)
+
+        expect(response).to be_success
+      end
+    end
   end
 end
