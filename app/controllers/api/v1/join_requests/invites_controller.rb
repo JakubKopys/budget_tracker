@@ -4,22 +4,26 @@ module Api
   module V1
     class JoinRequests::InvitesController < ApplicationController
       def create
-        user = User.find params[:user_id]
-        household = current_user.administrated_households.find params[:household_id]
-        respond_with interactor: Invites::Create.call(user: user, household: household)
+        call_params = {
+          invitee_id: params[:user_id].to_i,
+          household_id: params[:household_id].to_i,
+          user: current_user
+        }
+
+        respond_with interactor: Invites::Create.call(call_params)
       end
 
       def accept
-        respond_with interactor: Invites::Accept.call(invite_params)
+        respond_with interactor: Invites::Accept.call(answer_params)
       end
 
       def decline
-        respond_with interactor: Invites::Decline.call(invite_params)
+        respond_with interactor: Invites::Decline.call(answer_params)
       end
 
       private
 
-      def invite_params
+      def answer_params
         {
           user: current_user,
           invite_id: params[:id].to_i,
