@@ -5,12 +5,9 @@ module Invites
     delegate :user, :household_id, :invitee_id, to: :context
 
     def call
-      household = user.administrated_households.find household_id
-      invitee = User.find invitee_id
+      validate_form
 
-      validate_form household: household, invitee: invitee
-
-      invite = create_invite household: household, invitee: invitee
+      invite = create_invite
 
       context.result = { id: invite.id }
       context.status = :created
@@ -18,13 +15,21 @@ module Invites
 
     private
 
-    def validate_form(household:, invitee:)
+    def validate_form
       form = InviteForm.new user: invitee, household: household
       stop form.errors, :unprocessable_entity unless form.validate
     end
 
-    def create_invite(household:, invitee:)
+    def create_invite
       invitee.invites.create! household: household, expires_at: Time.current + 1.month
+    end
+
+    def household
+      @household ||= user.administrated_households.find household_id
+    end
+
+    def invitee
+      @invitee ||= User.find invitee_id
     end
   end
 end
