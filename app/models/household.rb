@@ -13,5 +13,10 @@ class Household < ApplicationRecord
   has_many :admins, through: :admin_household_users, source: :user
 
   has_many :invites, dependent: :destroy
+  has_many :pending_invites,
+           -> { where state: 'pending' },
+           class_name: 'Invite',
+           inverse_of: :household
+
   has_many :requests, dependent: :destroy
 end

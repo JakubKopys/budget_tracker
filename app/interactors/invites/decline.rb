@@ -6,7 +6,7 @@ module Invites
 
     def call
       household = user.administrated_households.find household_id
-      invite = household.invites.find invite_id
+      invite = household.pending_invites.find invite_id
 
       invite.decline!
 

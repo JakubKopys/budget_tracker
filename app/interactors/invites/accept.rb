@@ -25,8 +25,7 @@ module Invites
     end
 
     def invite
-      # TODO: pending.invites, but to Query objects idk
-      @invite ||= household.invites.find invite_id
+      @invite ||= household.pending_invites.find invite_id
     end
   end
 end
