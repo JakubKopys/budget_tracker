@@ -6,7 +6,14 @@ RSpec.describe Household, type: :model do
   describe 'associations' do
     it { is_expected.to have_many(:household_users).dependent :destroy }
     it { is_expected.to have_many(:users).through :household_users }
+
     it { is_expected.to have_many :invites }
+    it do
+      is_expected.to have_many(:pending_invites)
+        .class_name('Invite')
+        .inverse_of :household
+    end
+
     it { is_expected.to have_many :requests }
 
     it do
