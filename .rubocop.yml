@@ -33,7 +33,7 @@ Metrics/BlockLength:
 Style/ModuleFunction:
   EnforcedStyle: extend_self
 
-Style/MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   Exclude:
     - spec/**/**.rb
 

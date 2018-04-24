@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   private
 
   def render_not_found_response(exception)
-    render json: { error: exception.message }, status: :not_found
+    render json: { errors: exception.message }, status: :not_found
   end
 
   def authenticate_user!
