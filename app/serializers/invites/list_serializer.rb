@@ -2,7 +2,7 @@
 
 module Invites
   class ListSerializer < ActiveModel::Serializer
-    attributes :id, :expiry_date
+    attributes :id, :expires_at
 
     belongs_to :household, serializer: Households::DetailsSerializer
     belongs_to :invitee, serializer: Users::ProfileSerializer

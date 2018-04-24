@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       resources :users, only: %i[create update]
       resources :households, only: %i[create update] do
         namespace :join_requests do
-          resources :invites, only: %i[create update destroy] do
+          resources :invites, only: %i[index create update destroy] do
             member do
               post :accept
               post :decline

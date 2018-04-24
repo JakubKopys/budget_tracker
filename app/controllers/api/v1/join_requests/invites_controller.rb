@@ -6,7 +6,7 @@ module Api
       def index
         call_params = {
           user: current_user,
-          household_id: params[:household_id].to_i
+          params: index_params
         }
 
         respond_with interactor: Invites::Index.call(call_params)
@@ -31,6 +31,10 @@ module Api
       end
 
       private
+
+      def index_params
+        params.permit :household_id, :sort_by, :sort_id, :per_page, :page
+      end
 
       def answer_params
         {
