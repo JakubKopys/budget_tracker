@@ -17,7 +17,7 @@ Rails.application.routes.draw do
         end
 
         namespace :join_requests do
-          resources :invites, only: %i[create update destroy] do
+          resources :invites, only: %i[create] do
             get :inex, to: 'households#invites'
 
             member do
@@ -26,7 +26,7 @@ Rails.application.routes.draw do
             end
           end
 
-          resources :requests, only: %i[create update destroy]
+          resources :requests, only: %i[create]
         end
       end
 
