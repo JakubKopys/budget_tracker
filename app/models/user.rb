@@ -15,5 +15,11 @@ class User < ApplicationRecord
                                       source: :household
 
   has_many :invites, foreign_key: :invitee_id, inverse_of: :invitee, dependent: :destroy
+  has_many :pending_invites,
+           -> { where state: 'pending' },
+           class_name: 'Invite',
+           foreign_key: :invitee_id,
+           inverse_of: :invitee
+
   has_many :requests, foreign_key: :invitee_id, inverse_of: :invitee, dependent: :destroy
 end

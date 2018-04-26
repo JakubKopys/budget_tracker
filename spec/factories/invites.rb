@@ -5,5 +5,9 @@ FactoryBot.define do
     association :invitee, factory: :user
     household
     expires_at { Time.current + 1.week }
+
+    factory :pending_invite do
+      state 'pending'
+    end
   end
 end

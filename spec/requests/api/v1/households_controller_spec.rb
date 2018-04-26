@@ -113,4 +113,69 @@ RSpec.describe Api::V1::HouseholdsController, type: :request do
       end
     end
   end
+
+  describe 'GET #invites' do
+    context 'when user is not logged in' do
+      it 'is unauthorized and returns errors' do
+        household = create :household
+
+        get "/api/v1/households/#{household.id}/invites"
+
+        json_response = JSON.parse response.body
+        expect(response).to be_unauthorized
+        expect(json_response).to have_key 'errors'
+      end
+    end
+
+    context 'when user is logged in but is not an admin' do
+      include AuthenticationHelper
+
+      it 'is not found and returns errors' do
+        household = create :household
+
+        auth_get "/api/v1/households/#{household.id}/invites"
+
+        json_response = JSON.parse response.body
+        expect(response).to be_not_found
+        expect(json_response).to have_key 'errors'
+      end
+    end
+
+    context 'when user is logged in and is an household admin' do
+      include AuthenticationHelper
+
+      it 'returns pending invites' do
+        household = create :household_with_admin
+        invitee   = create :user
+        invite    = create :invite, household: household, invitee: invitee
+        admin     = household.admins.first
+
+        params = { page: 1, per_page: 10 }
+        auth_get "/api/v1/households/#{household.id}/invites",
+                 user: admin,
+                 params: params
+
+        expected_json_response = [
+          {
+            id: invite.id,
+            expires_at: invite.expires_at,
+            household: {
+              id: household.id,
+              name: household.name
+            },
+            invitee: {
+              id: invitee.id,
+              first_name: invitee.first_name,
+              last_name: invitee.last_name,
+              email: invitee.email
+            }
+          }
+        ].as_json
+
+        json_response = JSON.parse response.body
+        expect(response).to be_success
+        expect(json_response).to eq expected_json_response
+      end
+    end
+  end
 end

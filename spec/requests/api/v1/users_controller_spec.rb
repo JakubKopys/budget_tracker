@@ -94,4 +94,49 @@ RSpec.describe Api::V1::UsersController, type: :request do
       end
     end
   end
+
+  describe 'GET #invites' do
+    context 'when user is not logged in' do
+      it 'is unauthorized and returns errors' do
+        get '/api/v1/users/invites'
+
+        json_response = JSON.parse response.body
+        expect(response).to be_unauthorized
+        expect(json_response).to have_key 'errors'
+      end
+    end
+
+    context 'when user is logged in' do
+      include AuthenticationHelper
+
+      it "returns current user's invites" do
+        user      = create :user
+        household = create :household
+        invite    = create :pending_invite, invitee: user, household: household
+
+        auth_get '/api/v1/users/invites', user: user
+
+        expected_json_response = [
+          {
+            id: invite.id,
+            expires_at: invite.expires_at,
+            household: {
+              id: household.id,
+              name: household.name
+            },
+            invitee: {
+              id: user.id,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              email: user.email
+            }
+          }
+        ].as_json
+
+        json_response = JSON.parse response.body
+        expect(response).to be_success
+        expect(json_response).to eq expected_json_response
+      end
+    end
+  end
 end
