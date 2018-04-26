@@ -5,12 +5,14 @@ info:
   version: 1.0.0
   title: BudgetTracker API
 host: <%= Rails.application.secrets.host %>
-basePath: "/api"
+basePath: '/api'
 produces:
-- "application/json"
+- 'application/json'
 tags:
 - name: Users
   description: Authentication and updating users
+- name: Households
+- name: Invites
 schemas:
 - http
 definitions:
@@ -30,6 +32,18 @@ definitions:
             type: string
           email:
             type: string
+  household:
+    type: object
+    required:
+      - household
+    properties:
+      household:
+        type: object
+        properties:
+          id:
+            type: number
+          name:
+            type: string
 
 securityDefinitions:
   User:
@@ -41,7 +55,7 @@ paths:
     post:
       tags:
         - Users
-      summary: "Create new User"
+      summary: Create new User
       parameters:
         - name: user[email]
           in: formData
@@ -80,7 +94,7 @@ paths:
     put:
       tags:
         - Users
-      summary: "Update User"
+      summary: Update User
       security:
         - User: []
       parameters:
@@ -123,6 +137,28 @@ paths:
               schema:
                 errors: array
 
+  /v1/users/invites:
+    get:
+      tags:
+        - Users
+        - Invites
+      summary: Get Current User's Invites
+      security:
+        - User: []
+      responses:
+        200:
+          description: User's invites to be returned
+          content:
+            application/json:
+              schema:
+                invites: array
+        404:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
   /v1/users/login:
     post:
       tags:
@@ -153,3 +189,181 @@ paths:
         - Users
       security:
         - Users: []
+
+  /v1/households:
+    post:
+      tags:
+        - Households
+      summary: Create new Households
+      security:
+        - User: []
+      parameters:
+        - name: household[name]
+          in: formData
+          required: true
+          type: string
+          description: Household's Name. Unique across the system.
+      responses:
+        201:
+          description: created household to be returned
+          content:
+            application/json:
+               schema:
+                 $ref: '#/definitions/household'
+
+        422:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
+  /v1/households/{id}:
+    put:
+      tags:
+        - Households
+      summary: Update Household
+      security:
+        - User: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          description: Household's id
+        - name: household[name]
+          in: formData
+          type: string
+          description: Household's name
+      responses:
+        200:
+          description: updated household to be returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/household'
+        401:
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                errors: array
+        422:
+          description: Invalid. Errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
+  /v1/households/{id}/invites:
+    get:
+      tags:
+        - Households
+        - Invites
+      summary: Get Household's Invites
+      security:
+        - User: []
+      responses:
+        200:
+          description: Household's invites to be returned
+          content:
+            application/json:
+              schema:
+                invites: array
+        404:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
+  /v1/household/{household_id}/join_requests/invites:
+    post:
+      tags:
+        - Households
+        - Invites
+      summary: Invite User to Household
+      security:
+        - User: []
+      parameters:
+        - name: household_id
+          in: path
+          required: true
+          type: integer
+          description: Households's id
+        - name: user_id
+          in: formData
+          required: true
+          type: integer
+          description: ID of User to be invited
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                user_id: string
+                token: string
+        404:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
+  /v1/household/{household_id}/join_requests/invites/{id}/accept:
+    post:
+      tags:
+        - Households
+        - Invites
+      summary: Accept Invite to join the Household
+      security:
+        - User: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          description: Invites's id
+        - name: household_id
+          in: path
+          required: true
+          type: integer
+          description: Households's id
+      responses:
+        200:
+          description: no content
+        401:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
+
+  /v1/household/{household_id}/join_requests/invites/{id}/decline:
+    post:
+      tags:
+        - Households
+        - Invites
+      summary: Decline Invite to join the Household
+      security:
+        - User: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          description: Invites's id
+        - name: household_id
+          in: path
+          required: true
+          type: integer
+          description: Households's id
+      responses:
+        200:
+          description: no content
+        401:
+          description: errors to be returned
+          content:
+            application/json:
+              schema:
+                errors: array
