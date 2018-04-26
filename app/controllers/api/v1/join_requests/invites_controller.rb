@@ -3,15 +3,6 @@
 module Api
   module V1
     class JoinRequests::InvitesController < ApplicationController
-      def index
-        call_params = {
-          user: current_user,
-          params: index_params
-        }
-
-        respond_with interactor: Invites::Index.call(call_params)
-      end
-
       def create
         call_params = {
           invitee_id: params[:user_id].to_i,
@@ -31,10 +22,6 @@ module Api
       end
 
       private
-
-      def index_params
-        params.permit :household_id, :sort_by, :sort_id, :per_page, :page
-      end
 
       def answer_params
         {

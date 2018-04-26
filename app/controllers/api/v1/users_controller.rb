@@ -14,6 +14,15 @@ module Api
         respond_with interactor: Users::Update.call(user_params.merge(id: params[:id]))
       end
 
+      def invites
+        call_params = {
+          user: current_user,
+          params: invites_params
+        }
+
+        respond_with interactor: Users::ListInvites.call(call_params)
+      end
+
       private
 
       def authorize_user
@@ -23,8 +32,12 @@ module Api
                status: :forbidden
       end
 
+      def invites_params
+        params.permit :sort_by, :sort_id, :per_page, :page
+      end
+
       def user_params
-        params.require(:user).permit(:email, :first_name, :last_name, :password)
+        params.require(:user).permit :email, :first_name, :last_name, :password
       end
     end
   end
