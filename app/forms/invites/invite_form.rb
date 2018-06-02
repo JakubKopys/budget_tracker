@@ -7,14 +7,16 @@ module Invites
     attr_accessor(*ATTRIBUTES)
 
     validates :user, :household, presence: true
-    validate :cant_be_household_resident
+    validate :household_residents_exclusion
 
     private
 
-    def cant_be_household_resident
-      return unless household.household_users.pluck(:user_id).include? user.id
-
-      errors.add :user, "can't invite user that is already an household resident"
+    def household_residents_exclusion
+      if HouseholdUser.exists? user: user, household: household
+        errors.add :user, 'is already an household resident'
+      else
+        true
+      end
     end
   end
 end
