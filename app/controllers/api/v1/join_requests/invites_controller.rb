@@ -10,15 +10,15 @@ module Api
           user: current_user
         }
 
-        respond_with interactor: Invites::Create.call(call_params)
+        respond_with interactor: ::JoinRequests::Invites::Create.call(call_params)
       end
 
       def accept
-        respond_with interactor: Invites::Accept.call(answer_params)
+        respond_with interactor: ::JoinRequests::Invites::Accept.call(answer_params)
       end
 
       def decline
-        respond_with interactor: Invites::Decline.call(answer_params)
+        respond_with interactor: ::JoinRequests::Invites::Decline.call(answer_params)
       end
 
       private

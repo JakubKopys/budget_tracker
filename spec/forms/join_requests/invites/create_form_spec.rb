@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'support/shared_examples/application_form'
 
-RSpec.describe Invites::InviteForm, type: :model do
+RSpec.describe JoinRequests::Invites::CreateForm, type: :model do
   it_behaves_like 'application_form'
 
   describe 'validations' do
