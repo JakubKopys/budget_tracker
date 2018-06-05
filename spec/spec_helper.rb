@@ -29,7 +29,8 @@ RSpec.configure do |config|
 
   config.default_formatter = 'doc' if config.files_to_run.one?
 
-  config.profile_examples = 10
+  # uncomment for profiling
+  # config.profile_examples = 10
 
   config.order = :random
 end

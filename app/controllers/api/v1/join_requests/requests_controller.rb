@@ -3,7 +3,6 @@
 module Api
   module V1
     class JoinRequests::RequestsController < ApplicationController
-      # TODO: test
       def create
         call_params = {
           user: current_user,

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class JoinRequest < ApplicationRecord
+  PERIOD_OF_VALIDITY = 1.month
+
   include AASM
   belongs_to :household
 

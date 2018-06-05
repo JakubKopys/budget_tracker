@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module JoinRequests
-  module Request
+  module Requests
     class Create < ApplicationInteractor
       delegate :user, :household_id, to: :context
 
@@ -10,7 +10,7 @@ module JoinRequests
 
         validate_form(household: household, user: user)
 
-        request = user.reqests.create household: household
+        request = create_request(household: household, user: user)
 
         context.result = { id: request.id }
         context.status = :created
@@ -21,6 +21,11 @@ module JoinRequests
       def validate_form(household:, user:)
         form = CreateForm.new user: user, household: household
         stop form.errors, :unprocessable_entity unless form.validate
+      end
+
+      def create_request(user:, household:)
+        user.requests.create household: household,
+                             expires_at: Time.current + JoinRequest::PERIOD_OF_VALIDITY
       end
     end
   end

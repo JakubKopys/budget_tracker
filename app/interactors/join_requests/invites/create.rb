@@ -22,7 +22,8 @@ module JoinRequests
       end
 
       def create_invite
-        invitee.invites.create! household: household, expires_at: Time.current + 1.month
+        invitee.invites.create! household: household,
+                                expires_at: Time.current + JoinRequest::PERIOD_OF_VALIDITY
       end
 
       def household

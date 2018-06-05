@@ -20,11 +20,10 @@ module JoinRequests
       end
     end
 
-    # TODO: test
     def join_request_uniqueness
-      @join_request ||= JoinRequest.new
+      @user ||= User.new
 
-      if JoinRequest.exists? invitee_id: @join_request.id, household: household
+      if JoinRequest.exists? invitee_id: @user.id, household: household
         errors.add :base, 'such join request already exists'
       else
         true
