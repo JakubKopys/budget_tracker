@@ -19,4 +19,8 @@ class Household < ApplicationRecord
            inverse_of: :household
 
   has_many :requests, dependent: :destroy
+  has_many :pending_requests,
+           -> { where state: 'pending' },
+           class_name: 'Request',
+           inverse_of: :household
 end

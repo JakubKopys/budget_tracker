@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
         namespace :join_requests do
           resources :invites, only: %i[create] do
-            get :inex, to: 'households#invites'
+            get :index, to: 'households#invites' # TODO: implement
 
             member do
               post :accept
@@ -26,7 +26,12 @@ Rails.application.routes.draw do
             end
           end
 
-          resources :requests, only: %i[create]
+          resources :requests, only: %i[create] do
+            member do
+              post :accept
+              post :decline
+            end
+          end
         end
       end
 

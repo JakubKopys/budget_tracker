@@ -11,6 +11,24 @@ module Api
 
         respond_with interactor: ::JoinRequests::Requests::Create.call(call_params)
       end
+
+      def accept
+        respond_with interactor: ::JoinRequests::Requests::Accept.call(answer_params)
+      end
+
+      def decline
+        raise NotImplementedError
+      end
+
+      private
+
+      def answer_params
+        {
+          user: current_user,
+          request_id: params[:id].to_i,
+          household_id: params[:household_id].to_i
+        }
+      end
     end
   end
 end
