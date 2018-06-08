@@ -97,37 +97,19 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
       end
     end
 
-    context 'when user is logged in but is not an admin' do
-      include AuthenticationHelper
-
-      it 'is not found and returns errors' do
-        household = create :household
-        invite = create :invite, household: household
-
-        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
-               '/accept'
-
-        expect { auth_post path }.not_to(change { invite.reload.state })
-
-        json_response = JSON.parse response.body
-        expect(response).to be_not_found
-        expect(json_response).to have_key 'errors'
-      end
-    end
-
-    context 'when user is logged in and is an admin' do
+    context 'when user is logged in' do
       include AuthenticationHelper
 
       it 'is success and updates invite state' do
-        household = create :household_with_admin
-        invite = create :invite, household: household
-        admin = household.admins.first
+        user      = create :user
+        household = create :household
+        invite    = create :invite, household: household, invitee: user
 
         path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
                '/accept'
 
         expect do
-          auth_post path, user: admin
+          auth_post path, user: user
           invite.reload
           household.reload
         end.to  change(invite, :state).to('accepted')
