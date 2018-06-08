@@ -140,7 +140,7 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
     context 'when user is logged in but is not an admin' do
       include AuthenticationHelper
 
-      it 'is not found and returns error' do
+      it 'is success and updates invite state' do
         user      = create :user
         household = create :household
         invite    = create :invite, household: household, invitee: user
