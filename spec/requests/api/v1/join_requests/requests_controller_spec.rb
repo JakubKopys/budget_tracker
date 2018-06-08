@@ -90,7 +90,7 @@ RSpec.describe Api::V1::JoinRequests::RequestsController, type: :request do
     context 'when user is logged in and is an admin' do
       include AuthenticationHelper
 
-      it 'is success and updates invite state' do
+      it 'is success and updates request state' do
         household = create :household_with_admin
         request   = create :request, household: household
         admin     = household.admins.first
@@ -104,6 +104,64 @@ RSpec.describe Api::V1::JoinRequests::RequestsController, type: :request do
           household.reload
         end.to  change(request, :state).to('accepted')
            .and change(household.users, :count).by 1
+
+        expect(response).to be_success
+      end
+    end
+  end
+
+  describe 'POST #decline' do
+    context 'when user is not logged in' do
+      it 'is unauthorized and returns errors' do
+        household = create :household
+        request = create :request, household: household
+
+        path = "/api/v1/households/#{household.id}/join_requests/requests/#{request.id}" \
+               '/decline'
+
+        expect { post path }.not_to(change { request.reload.state })
+
+        json_response = JSON.parse response.body
+        expect(response).to be_unauthorized
+        expect(json_response).to have_key 'errors'
+      end
+    end
+
+    context 'when user is logged in but is not an admin' do
+      include AuthenticationHelper
+
+      it 'is not found and returns error' do
+        household = create :household
+        request = create :request, household: household
+
+        path = "/api/v1/households/#{household.id}/join_requests/requests/#{request.id}" \
+               '/decline'
+
+        expect { auth_post path }.not_to(change { request.reload.state })
+
+        json_response = JSON.parse response.body
+        expect(response).to be_not_found
+        expect(json_response).to have_key 'errors'
+      end
+    end
+
+    context 'when user is logged in and is an admin' do
+      include AuthenticationHelper
+
+      it 'is success, creates household user and updates request state' do
+        household = create :household_with_admin
+        request = create :request, household: household
+        admin = household.admins.first
+
+        path = "/api/v1/households/#{household.id}/join_requests/requests/#{request.id}" \
+               '/decline'
+
+        expect do
+          auth_post path, user: admin
+          request.reload
+          household.reload
+        end.to  change(request, :state).to('declined')
+           .and not_change(household.users, :count)
 
         expect(response).to be_success
       end

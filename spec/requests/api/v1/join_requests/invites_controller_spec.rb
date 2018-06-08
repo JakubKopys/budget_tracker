@@ -120,7 +120,7 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
     end
   end
 
-  describe 'DELETE #destroy' do
+  describe 'POST #decline' do
     context 'when user is not logged in' do
       it 'is unauthorized and returns errors' do
         household = create :household
@@ -141,33 +141,15 @@ RSpec.describe Api::V1::JoinRequests::InvitesController, type: :request do
       include AuthenticationHelper
 
       it 'is not found and returns error' do
+        user      = create :user
         household = create :household
-        invite = create :invite, household: household
-
-        path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
-               '/decline'
-
-        expect { auth_post path }.not_to(change { invite.reload.state })
-
-        json_response = JSON.parse response.body
-        expect(response).to be_not_found
-        expect(json_response).to have_key 'errors'
-      end
-    end
-
-    context 'when user is logged in and is an admin' do
-      include AuthenticationHelper
-
-      it 'is success, creates household user and updates invite state' do
-        household = create :household_with_admin
-        invite = create :invite, household: household
-        admin = household.admins.first
+        invite    = create :invite, household: household, invitee: user
 
         path = "/api/v1/households/#{household.id}/join_requests/invites/#{invite.id}" \
                '/decline'
 
         expect do
-          auth_post path, user: admin
+          auth_post path, user: user
           invite.reload
           household.reload
         end.to  change(invite, :state).to('declined')

@@ -26,8 +26,7 @@ module Api
       def answer_params
         {
           user: current_user,
-          invite_id: params[:id].to_i,
-          household_id: params[:household_id].to_i
+          invite_id: params[:id].to_i
         }
       end
     end

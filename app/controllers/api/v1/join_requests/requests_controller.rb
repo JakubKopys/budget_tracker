@@ -17,7 +17,7 @@ module Api
       end
 
       def decline
-        raise NotImplementedError
+        respond_with interactor: ::JoinRequests::Requests::Decline.call(answer_params)
       end
 
       private
