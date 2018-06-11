@@ -6,7 +6,6 @@ module Api
       before_action :authorize_user, only: [:update]
 
       def create
-        # TODO: add users_ids, create invites for these users?
         respond_with interactor: Households::Create.call(household_params)
       end
 
@@ -18,15 +17,25 @@ module Api
       def invites
         call_params = {
           user: current_user,
-          params: invites_params
+          params: sort_params
         }
 
         respond_with interactor: Households::ListInvites.call(call_params)
       end
 
+      # TODO: test
+      def requests
+        call_params = {
+          user: current_user,
+          params: sort_params
+        }
+
+        respond_with interactor: Households::ListRequests.call(call_params)
+      end
+
       private
 
-      def invites_params
+      def sort_params
         params.permit :id, :sort_by, :sort_id, :per_page, :page
       end
 
