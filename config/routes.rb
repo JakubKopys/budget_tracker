@@ -14,12 +14,11 @@ Rails.application.routes.draw do
       resources :households, only: %i[create update] do
         member do
           get :invites
+          get :requests
         end
 
         namespace :join_requests do
           resources :invites, only: %i[create] do
-            get :index, to: 'households#invites' # TODO: implement
-
             member do
               post :accept
               post :decline

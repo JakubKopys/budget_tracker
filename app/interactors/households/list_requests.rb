@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Users
+module Households
   class ListRequests < ApplicationInteractor
     include Shared::Paginatable
     include Shared::Sortable
@@ -10,7 +10,7 @@ module Users
     def call
       household = user.administrated_households.find params[:id]
 
-      requests = household.pending_households
+      requests = household.pending_requests
       requests = sort relation: requests
       requests = paginate relation: requests
 
